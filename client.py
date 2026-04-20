@@ -20,7 +20,7 @@ while True:
     try:
         decrypted_message = decrypt(key, data)
         if decrypted_message:
-            print("Client: ", decrypted_message)
+            print("Server: ", decrypted_message)
             message = input("Message: ")
             if message == "exit":
                 break

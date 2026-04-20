@@ -30,7 +30,7 @@ while True:
     data = conn.recv(1024)
     if not data:
         break
-    print("Server: " + decrypt(key, data))
+    print("Client: " + decrypt(key, data))
 conn.close()
 server_socket.close()
 
