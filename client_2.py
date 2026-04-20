@@ -1,4 +1,5 @@
 import socket
+from cryptography.exceptions import InvalidTag
 from utils import *
 
 
@@ -16,11 +17,18 @@ while True:
     data = client.recv(1024)
     if not data:
         break
-    print("Client: ", decrypt(key, data))
-    message = input("Message: ")
-    if message == "exit":
-        break
+    try:
+        decrypted_message = decrypt(key, data)
+        if decrypted_message:
+            print("Client: ", decrypted_message)
+            message = input("Message: ")
+            if message == "exit":
+                break
+            client.sendall(encrypt(key, message))
+        else:
+            print("Authentication failed...")
+    except InvalidTag as e:
+        print("Authentication failed...")
 
-    client.sendall(encrypt(key, message))
 client.close()
 
