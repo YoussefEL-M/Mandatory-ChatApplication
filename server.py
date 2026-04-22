@@ -4,8 +4,6 @@ from utils import *
 HOST = '127.0.0.1'
 PORT = 10001
 
-password = input("Enter the password: ")
-
 # Opsætning af Socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((HOST, PORT))
@@ -18,7 +16,8 @@ print('Connected to ', addr)
 salt = os.urandom(16)
 conn.sendall(salt)
 
-key = derive_key(password, salt)
+key_2 = conn.recv(97)
+key = derive_key(key_2, salt)
 print("Key derived! Start chatting, write 'exit' to quit")
 
 while True:

@@ -2,16 +2,15 @@ import socket
 from cryptography.exceptions import InvalidTag
 from utils import *
 
-
-password = input("Enter the password: ")
-
+key_1, key_2 = generate_keys()
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(("127.0.0.1", 10001))
 
 salt = client.recv(16)
 
-key = derive_key(password, salt)
+client.send(key_2)
+key = derive_key(key_1, salt)
 
 while True:
     data = client.recv(1024)
