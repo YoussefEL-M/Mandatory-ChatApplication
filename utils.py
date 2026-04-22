@@ -1,10 +1,24 @@
 import os
 import hashlib
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.asymmetric import dh
 
-def derive_key(password: str, salt: bytes):
-    key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+def generate_keys():
+    parameters = dh.generate_parameters(generator=2, key_size=2048)
+    private_key1 = parameters.generate_private_key()
+    public_key1 = private_key1.public_key()
+
+    private_key2 = parameters.generate_private_key()
+    public_key2 = private_key2.public_key()
+
+    shared_key1 = private_key1.exchange(public_key2)
+    shared_key2 = private_key2.exchange(public_key1)
+    return shared_key1, shared_key2
+
+def derive_key(shared_key, salt: bytes):
+    key = hashlib.pbkdf2_hmac('sha256', shared_key, salt, 100000)
     return key
+
 
 def encrypt(key: bytes, plaintext: str):
     aesgcm = AESGCM(key)
