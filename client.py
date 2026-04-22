@@ -28,6 +28,7 @@ while True:
             print("Authentication failed...")
     except InvalidTag as e:
         print("Authentication failed...")
+        break
 
 client.close()
 

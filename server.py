@@ -1,4 +1,5 @@
 import socket
+from cryptography.exceptions import InvalidTag
 from utils import *
 
 HOST = '127.0.0.1'
@@ -21,15 +22,19 @@ key = derive_key(key_2, salt)
 print("Key derived! Start chatting, write 'exit' to quit")
 
 while True:
-    message = input("You: ")
-    if message.lower() == "exit":
-        break
-    conn.sendall(encrypt(key, message))
+    try:
+        message = input("You: ")
+        if message.lower() == "exit":
+            break
+        conn.sendall(encrypt(key, message))
 
-    data = conn.recv(1024)
-    if not data:
+        data = conn.recv(1024)
+        if not data:
+            break
+        print("Client: " + decrypt(key, data))
+    except InvalidTag:
+        print("Incorrect key...")
         break
-    print("Client: " + decrypt(key, data))
 conn.close()
 server_socket.close()
 
