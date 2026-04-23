@@ -4,9 +4,11 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.asymmetric import dh
 import sys
 
-def generate_keys():
+def get_parameters():
+    return dh.generate_parameters(generator=2, key_size=512)
+
+def generate_keys(parameters):
     print("Generating keys...")
-    parameters = dh.generate_parameters(generator=2, key_size=512)
     private_key = parameters.generate_private_key()
     public_key = private_key.public_key()
     return private_key, public_key
@@ -31,6 +33,3 @@ def decrypt(key: bytes, data: bytes):
     cyphtertext = data[12:]
     plaintext = aesgcm.decrypt(nonce, cyphtertext, None)
     return plaintext.decode()
-
-pri_key, pub_key = generate_keys()
-print(sys.getsizeof(pub_key))
