@@ -1,16 +1,26 @@
 import socket
 from cryptography.exceptions import InvalidTag
 from utils import *
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, load_der_public_key
 
-key_1, key_2 = generate_keys()
+private_key, public_key = generate_keys()
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(("127.0.0.1", 10001))
 
+udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp_client.sendto(public_key.public_bytes(Encoding.DER, PublicFormat.SubjectPublicKeyInfo), ("127.0.0.1", 10001))
+
 salt = client.recv(16)
 
-client.send(key_2)
-key = derive_key(key_1, salt)
+# -TODO Do not send shared secret!!!
+#client.send(key_2)
+public_key2, _ = udp_client.recvfrom(2048)
+#public_key2 = load_der_public_key(public_key2)
+print("Server public key: ", public_key2)
+
+shared_secret = generate_shared_secret(private_key, public_key2)
+key = derive_key(shared_secret, salt)
 
 while True:
     data = client.recv(1024)
